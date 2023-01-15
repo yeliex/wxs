@@ -1,0 +1,43 @@
+datasource db {
+  provider = "mysql"
+  url = "mysql://root@localhost:3306/wxs"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model App {
+  id                Int         @id @default(autoincrement())
+
+  // 对外接口ID 用于隐藏真实应用
+  outerId           String      @unique @db.VarChar(24) @map("outer_id")
+  name              String
+
+  appId             String      @db.VarChar(24) @map("app_id")
+  appSecret         String      @db.VarChar(48) @map("app_secret")
+  // 微信OfficalID
+  officalId         String?     @db.VarChar(24) @map("offical_id")
+  // 消息接口token
+  token             String?     @db.VarChar(512) @map("token")
+  // 消息接口加密key
+  encodingAESKey    String?     @db.VarChar(512) @map("encoding_aes_key")
+
+  // 是否为服务号
+  isService         Boolean     @default(false) @map("is_service")
+  // 主体是否为企业
+  isOrganization    Boolean     @default(false) @map("is_organization")
+  // 是否已认证
+  isCertified       Boolean     @default(false) @map("is_certified")
+  // 服务验证时间 (记录最后一次时间 可能被覆盖)
+  verifiedAt        DateTime?   @map("verified_at")
+  // 硬件平台服务验证时间
+  iotVerifiedAt     DateTime?   @map("iot_verified_at")
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
+  deletedAt         DateTime?   @map("deleted_at")
+
+  @@map("app")
+  @@index([outerId])
+  @@index([appId])
+}
